@@ -22,13 +22,15 @@ __global__ void wmma_fp16_kernel(const __half* a_row_major,
   if (row >= m || col >= n) {
     return;
   }
-
+  // Fragments are a specified data structure for tensor cores. I would recommend research what fragments are and why they are needed
   wmma::fragment<wmma::matrix_a, tile_m, tile_n, tile_k, __half, wmma::row_major> a_frag;
   wmma::fragment<wmma::matrix_b, tile_m, tile_n, tile_k, __half, wmma::col_major> b_frag;
-  wmma::fragment<wmma::accumulator, tile_m, tile_n, tile_k, float> c_frag;
+  // Notice no specification here for layout type, because accumalators are layout agnostic
+  wmma::fragment<wmma::accumulator, tile_m, tile_n, tile_k, float> c_frag; 
 
   wmma::fill_fragment(c_frag, 0.0f);
 
+  // The computation loop
   for (int kk = 0; kk < k; kk += tile_k) {
     const __half* a_tile = a_row_major + static_cast<size_t>(row) * k + kk;
     const __half* b_tile = b_col_major + kk + static_cast<size_t>(col) * k;
@@ -38,6 +40,7 @@ __global__ void wmma_fp16_kernel(const __half* a_row_major,
     wmma::mma_sync(c_frag, a_frag, b_frag, c_frag);
   }
 
+  // Move the accumulator matrix back into gpu memory
   float* c_tile = c_row_major + static_cast<size_t>(row) * n + col;
   wmma::store_matrix_sync(c_tile, c_frag, n, wmma::mem_row_major);
 }

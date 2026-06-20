@@ -12,6 +12,13 @@ This repository utilizes a two-branch architecture to serve as a turnkey educati
 * **`main` / `template` Branch:** The student starter kit. Contains the complete CMake build system, host-side memory orchestration, cuBLAS benchmarking harness, and automated validation scripts. Core hardware-level kernel logic is left as a implementation exercise.
 * **`solution` Branch:** The reference implementation. Features fully verified, compiling WMMA implementations with active validation, timing metrics, and error analysis code.
 
+### Project Architecture in This Repo
+
+- `src/main.cu`: host orchestration, data setup, cuBLAS baseline, timing, and error stats.
+- `src/wmma_fp16.cu`: FP16 WMMA kernel (`16x16x16`).
+- `src/wmma_tf32.cu`: TF32 WMMA kernel (`16x16x8`).
+- `analysis/precision_loss.py`: underflow and loss-scaling analysis.
+
 ## Prerequisites & Hardware
 * **Hardware:** Compute Capability 7.0+ (Volta, Ampere, Ada Lovelace, or Hopper architecture).
 * **Software:** Toolchain supporting CUDA 11.0+ and CMake 3.18+.

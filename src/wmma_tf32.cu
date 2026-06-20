@@ -22,6 +22,7 @@ __global__ void wmma_tf32_kernel(const float* a_row_major,
     return;
   }
 
+  // Notice here we specify precision - tf32
   wmma::fragment<wmma::matrix_a, tile_m, tile_n, tile_k, wmma::precision::tf32, wmma::row_major> a_frag;
   wmma::fragment<wmma::matrix_b, tile_m, tile_n, tile_k, wmma::precision::tf32, wmma::col_major> b_frag;
   wmma::fragment<wmma::accumulator, tile_m, tile_n, tile_k, float> c_frag;
